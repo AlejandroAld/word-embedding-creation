@@ -13,11 +13,10 @@ from keras.models import Input, Model
 from keras.layers import Dense
 
 from scipy import sparse
-
-# Custom functions
-from utility import text_preprocessing, create_unique_word_dict
-
 # Reading the text from the input folder
+
+from utility import create_unique_word_dict, text_preprocessing
+
 texts = pd.read_csv('input/sample.csv')
 texts = [x for x in texts['text']]
 
@@ -118,7 +117,8 @@ plt.figure(figsize=(10, 10))
 for word in list(unique_word_dict.keys()):
     coord = embedding_dict.get(word)
     plt.scatter(coord[0], coord[1])
-    plt.annotate(word, (coord[0], coord[1]))       
+    plt.annotate(word, (coord[0], coord[1]))
+plt.show()
 
 # Saving the embedding vector to a txt file
 try:
