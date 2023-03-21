@@ -21,11 +21,11 @@ texts = []
 
 # Recorrer cada archivo de texto y agregar su contenido a la lista de textos
 for file_name in file_names[0:1]:
-    text = gutenberg.raw(file_name)[0:1000]
+    text = gutenberg.raw(file_name)[:3000]
     texts.append(text)
 
 # Defining the window for context
-window = 3
+window = 5
 
 # Creating a placeholder for the scanning of the word list
 word_lists = []
@@ -107,6 +107,7 @@ model.fit(
 
 # The input layer
 weights = model.get_weights()[0]
+print(model.get_weights())
 
 # Creating a dictionary to store the embeddings in. The key is a unique word and
 # the value is the numeric vector
