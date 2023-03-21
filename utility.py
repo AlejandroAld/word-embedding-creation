@@ -1,6 +1,7 @@
 import re
 import numpy as np
 
+
 def create_unique_word_dict(text:list) -> dict:
     """
     A method that creates a dictionary where the keys are unique words
@@ -18,6 +19,7 @@ def create_unique_word_dict(text:list) -> dict:
         })
 
     return unique_word_dict    
+
 
 def text_preprocessing(
     text:list,
@@ -54,12 +56,14 @@ def text_preprocessing(
 
     return text
 
+
 # Functions to find the most similar word 
 def euclidean(vec1:np.array, vec2:np.array) -> float:
     """
     A function to calculate the euclidean distance between two vectors
     """
     return np.sqrt(np.sum((vec1 - vec2)**2))
+
 
 def find_similar(word:str, embedding_dict:dict, top_n=10)->list:
     """
@@ -69,10 +73,12 @@ def find_similar(word:str, embedding_dict:dict, top_n=10)->list:
     word_vector = embedding_dict.get(word, [])
     if len(word_vector) > 0:
         for key, value in embedding_dict.items():
-            if key!=word:
+            if key != word:
                 dist = euclidean(word_vector, value)
                 dist_dict.update({
                     key: dist
                 })
 
-        return sorted(dist_dict.items(), key=lambda x: x[1])[0:top_n]       
+        return sorted(dist_dict.items(), key=lambda x: x[1])[0:top_n]
+    else:
+        return []

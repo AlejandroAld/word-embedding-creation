@@ -112,6 +112,9 @@ for word in words:
         word: weights[unique_word_dict.get(word)]
         })
 
+for word in list(unique_word_dict.keys()):
+    print(f'{word}: {unique_word_dict.get(word)}')
+
 # Ploting the embeddings
 plt.figure(figsize=(10, 10))
 for word in list(unique_word_dict.keys()):
@@ -122,7 +125,7 @@ plt.show()
 
 # Saving the embedding vector to a txt file
 try:
-    os.mkdir(f'{os.getcwd()}\\output')        
+    os.mkdir(f'{os.getcwd()}\\output')
 except Exception as e:
     print(f'Cannot create output folder: {e}')
 
