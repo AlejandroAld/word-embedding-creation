@@ -1,25 +1,31 @@
 import pandas as pd
 import numpy as np
-import os
+import nltk
+from nltk.corpus import gutenberg
 
-# Drawing the embeddings
-import matplotlib.pyplot as plt
-from mpl_toolkits import mplot3d
-
-# Deep learning: 
+# Deep learning:
 from keras.models import Input, Model
 from keras.layers import Dense
 
 from scipy import sparse
 # Reading the text from the input folder
 
-from utility import create_unique_word_dict, text_preprocessing
+from utility import create_unique_word_dict, text_preprocessing, find_similar
 
-texts = pd.read_csv('input/sample.csv')
-texts = [x for x in texts['text']]
+nltk.download('gutenberg')
+
+file_names = gutenberg.fileids()
+
+# Crear una lista vacía para almacenar los textos
+texts = []
+
+# Recorrer cada archivo de texto y agregar su contenido a la lista de textos
+for file_name in file_names[0:1]:
+    text = gutenberg.raw(file_name)[0:1000]
+    texts.append(text)
 
 # Defining the window for context
-window = 2
+window = 3
 
 # Creating a placeholder for the scanning of the word list
 word_lists = []
@@ -39,7 +45,7 @@ for text in texts:
             # Getting the context that is ahead by *window* words
             if i + 1 + w < len(text):
                 word_lists.append([word] + [text[(i + 1 + w)]])
-            # Getting the context that is behind by *window* words    
+            # Getting the context that is behind by *window* words
             if i - w - 1 >= 0:
                 word_lists.append([word] + [text[(i - w - 1)]])
 
@@ -48,7 +54,7 @@ unique_word_dict = create_unique_word_dict(all_text)
 # Defining the number of features (unique words)
 n_words = len(unique_word_dict)
 
-# Getting all the unique words 
+# Getting all the unique words
 words = list(unique_word_dict.keys())
 
 # Creating the X and Y matrices using one hot encoding
@@ -60,14 +66,14 @@ for i, word_list in enumerate(word_lists):
     main_word_index = unique_word_dict.get(word_list[0])
     context_word_index = unique_word_dict.get(word_list[1])
 
-    # Creating the placeholders   
+    # Creating the placeholders
     X_row = np.zeros(n_words)
     Y_row = np.zeros(n_words)
 
     # One hot encoding the main word
     X_row[main_word_index] = 1
 
-    # One hot encoding the Y matrix words 
+    # One hot encoding the Y matrix words
     Y_row[context_word_index] = 1
 
     # Appending to the main matrices
@@ -79,7 +85,7 @@ X = sparse.csr_matrix(X)
 Y = sparse.csr_matrix(Y)
 
 # Defining the size of the embedding
-embed_size = 3
+embed_size = 100
 
 # Defining the neural network
 inp = Input(shape=(X.shape[1],))
@@ -96,13 +102,13 @@ model.fit(
     epochs=10000
 )
 
-# Obtaining the weights from the neural network. 
+# Obtaining the weights from the neural network.
 # These are the so called word embeddings
 
-# The input layer 
+# The input layer
 weights = model.get_weights()[0]
 
-# Creating a dictionary to store the embeddings in. The key is a unique word and 
+# Creating a dictionary to store the embeddings in. The key is a unique word and
 # the value is the numeric vector
 embedding_dict = {}
 for word in words:
@@ -110,26 +116,8 @@ for word in words:
         word: weights[unique_word_dict.get(word)]
     })
 
-
-# Ploting the embeddings
-fig = plt.figure()
-ax = plt.axes(projection='3d')
-for word in list(unique_word_dict.keys()):
-    coord = embedding_dict.get(word)
-    print(coord)
-    ax.scatter(coord[0], coord[1], coord[2], c='r')
-    ax.text(coord[0], coord[1], coord[2], word)
-plt.show()
-
-# Saving the embedding vector to a txt file
-try:
-    os.mkdir(f'{os.getcwd()}\\output')
-except Exception as e:
-    print(f'Cannot create output folder: {e}')
-
-with open(f'{os.getcwd()}\\output\\embedding.txt', 'w') as f:
-    for key, value in embedding_dict.items():
-        try:
-            f.write(f'{key}: {value}\n')
-        except Exception as e:
-            print(f'Cannot write word {key} to dict: {e}')
+# Calculating the similarity between two vectors
+for word in words:
+    print(f'Word: {word}')
+    print(find_similar(word, embedding_dict))
+    print('')

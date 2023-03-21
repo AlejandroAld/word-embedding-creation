@@ -2,7 +2,7 @@ import re
 import numpy as np
 
 
-def create_unique_word_dict(text:list) -> dict:
+def create_unique_word_dict(text: list) -> dict:
     """
     A method that creates a dictionary where the keys are unique words
     and key values are indices
@@ -18,19 +18,22 @@ def create_unique_word_dict(text:list) -> dict:
             word: i
         })
 
-    return unique_word_dict    
+    return unique_word_dict
 
 
 def text_preprocessing(
-    text:list,
-    punctuations = r'''!()-[]{};:'"\,<>./?@#$%^&*_“~''',
-    stop_words=['and', 'a', 'is', 'the', 'in', 'be', 'will']
-    )->list:
+        text: str,
+        punctuations=r'''!()-[]{};:'"\,<>./?@#$%^&*_“~''',
+        stop_words=None
+) -> list:
     """
     A method to preproces text
     """
-    for x in text.lower(): 
-        if x in punctuations: 
+    if stop_words is None:
+        stop_words = ['and', 'a', 'is', 'the', 'in', 'be', 'will']
+
+    for x in text.lower():
+        if x in punctuations:
             text = text.replace(x, "")
 
     # Removing words that have numbers in them
@@ -49,7 +52,7 @@ def text_preprocessing(
     text = text.split(' ')
 
     # Droping empty strings
-    text = [x for x in text if x!='']
+    text = [x for x in text if x != '']
 
     # Droping stop words
     text = [x for x in text if x not in stop_words]
@@ -58,14 +61,14 @@ def text_preprocessing(
 
 
 # Functions to find the most similar word 
-def euclidean(vec1:np.array, vec2:np.array) -> float:
+def euclidean(vec1: np.array, vec2: np.array) -> float:
     """
     A function to calculate the euclidean distance between two vectors
     """
-    return np.sqrt(np.sum((vec1 - vec2)**2))
+    return np.sqrt(np.sum((vec1 - vec2) ** 2))
 
 
-def find_similar(word:str, embedding_dict:dict, top_n=10)->list:
+def find_similar(word: str, embedding_dict: dict, top_n=10) -> list:
     """
     A method to find the most similar word based on the learnt embeddings
     """
