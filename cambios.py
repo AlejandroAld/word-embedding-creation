@@ -25,7 +25,7 @@ for file_name in file_names[0:1]:
     texts.append(text)
 
 # Defining the window for context
-window = 5
+window = 2
 
 # Creating a placeholder for the scanning of the word list
 word_lists = []
@@ -64,7 +64,7 @@ Y = []
 for i, word_list in enumerate(word_lists):
     # Getting the indices
     main_word_index = unique_word_dict.get(word_list[0])
-    context_word_index = unique_word_dict.get(word_list[1])
+    context_word_index = [unique_word_dict.get(i) for i in word_list[1:]]
 
     # Creating the placeholders
     X_row = np.zeros(n_words)
@@ -74,7 +74,8 @@ for i, word_list in enumerate(word_lists):
     X_row[main_word_index] = 1
 
     # One hot encoding the Y matrix words
-    Y_row[context_word_index] = 1
+    for index in context_word_index:
+        Y_row[index] = 1
 
     # Appending to the main matrices
     X.append(X_row)
